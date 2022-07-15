@@ -1,9 +1,9 @@
 package services
 
 import (
-	"github.com/e421083458/gin_scaffold/dao"
-	"github.com/e421083458/gin_scaffold/dto"
-	"github.com/e421083458/gin_scaffold/middleware"
+	"github.com/e421083458/FayGateway/dao"
+	"github.com/e421083458/FayGateway/dto"
+	"github.com/e421083458/FayGateway/middleware"
 	"github.com/e421083458/golang_common/lib"
 	"github.com/gin-gonic/gin"
 )
