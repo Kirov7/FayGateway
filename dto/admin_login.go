@@ -17,7 +17,7 @@ type AdminLoginOutput struct {
 
 type AdminSessionInfo struct {
 	ID        int       `json:"id"`
-	UserName  string    `json:"username"`
+	UserName  string    `json:"user_name"`
 	LoginTime time.Time `json:"login_time"`
 }
 
