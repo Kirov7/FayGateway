@@ -60,7 +60,7 @@ func (changePwd *AdminController) AdminInfo(c *gin.Context) {
 // @ID /admin/change_pwd
 // @Accept  json
 // @Produce  json
-// @Param polygon body dto.AdminLoginInput true "body"
+// @Param polygon body dto.ChangePwdInput true "body"
 // @Success 200 {object} middleware.Response{data=string} "success"
 // @Router /admin/change_pwd [post]
 func (changePwd *AdminController) ChangePwd(c *gin.Context) {
@@ -74,6 +74,7 @@ func (changePwd *AdminController) ChangePwd(c *gin.Context) {
 	// 3. params.password + adminInfo.salt sha256 saltPassword
 	// 4. saltPassword => adminInfo.password 执行数据保存
 
+	//session 读取用户信息到结构体
 	sess := sessions.Default(c)
 	sessInfo := sess.Get(public.AdminSessionInfoKey)
 	adminSessInfo := dto.AdminSessionInfo{}
@@ -95,8 +96,14 @@ func (changePwd *AdminController) ChangePwd(c *gin.Context) {
 		return
 	}
 
-	////
-	//saltPassword := public.GenSaltPassword(adminInfo.Salt, params.Password)
-	//adminInfo.
-	//	middleware.ResponseSuccess(c, "")
+	//生成新加盐密码逻辑
+	saltPassword := public.GenSaltPassword(adminInfo.Salt, params.Password)
+	adminInfo.Password = saltPassword
+
+	//执行保存逻辑
+	if err := adminInfo.Save(c, tx); err != nil {
+		middleware.ResponseError(c, 2004, err)
+		return
+	}
+	middleware.ResponseSuccess(c, "")
 }
