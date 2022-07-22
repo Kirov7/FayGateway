@@ -1,5 +1,10 @@
 package dao
 
+import (
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
 type AccessControl struct {
 	ID                int64  `json:"id" gorm:"primary_key"`
 	ServiceID         int64  `json:"service_id" gorm:"column:service_id" description:"服务id"`
@@ -12,5 +17,35 @@ type AccessControl struct {
 }
 
 func (t *AccessControl) TableName() string {
-	return "gateway_service_access_controller"
+	return "gateway_service_access_control"
+}
+
+func (t *AccessControl) Find(c *gin.Context, tx *gorm.DB, search *AccessControl) (*AccessControl, error) {
+	model := &AccessControl{}
+	err := tx.WithContext(c).Where(search).Find(model).Error
+	return model, err
+}
+
+func (t *AccessControl) Save(c *gin.Context, tx *gorm.DB) error {
+	if err := tx.WithContext(c).Save(t).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (t *AccessControl) ListBYServiceID(c *gin.Context, tx *gorm.DB, serviceID int64) ([]AccessControl, int64, error) {
+	var list []AccessControl
+	var count int64
+	query := tx.WithContext(c)
+	query = query.Table(t.TableName()).Select("*")
+	query = query.Where("service_id=?", serviceID)
+	err := query.Order("id desc").Find(&list).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, 0, err
+	}
+	errCount := query.Count(&count).Error
+	if errCount != nil {
+		return nil, 0, err
+	}
+	return list, count, nil
 }

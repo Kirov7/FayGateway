@@ -1,5 +1,10 @@
 package dao
 
+import (
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
 type LoadBalance struct {
 	ID            int64  `json:"id" gorm:"primary_key"`
 	ServiceID     int64  `json:"service_id" gorm:"column:service_id" description:"服务id	"`
@@ -19,4 +24,17 @@ type LoadBalance struct {
 
 func (t *LoadBalance) TableName() string {
 	return "gateway_service_load_balance"
+}
+
+func (t *LoadBalance) Find(c *gin.Context, tx *gorm.DB, search *LoadBalance) (*LoadBalance, error) {
+	model := &LoadBalance{}
+	err := tx.WithContext(c).Where(search).Find(model).Error
+	return model, err
+}
+
+func (t *LoadBalance) Save(c *gin.Context, tx *gorm.DB) error {
+	if err := tx.WithContext(c).Save(t).Error; err != nil {
+		return err
+	}
+	return nil
 }
