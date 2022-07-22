@@ -21,8 +21,46 @@ func (t *ServiceInfo) TableName() string {
 	return "gateway_service_info"
 }
 
-func (t *ServiceInfo) ServiceDetail(c *gin.Context, tx *gorm.DB, search *ServiceInfo) ([]ServiceInfo, int64, error) {
-	return nil, 0, nil
+func (t *ServiceInfo) ServiceDetail(c *gin.Context, tx *gorm.DB, search *ServiceInfo) (*ServiceDetail, error) {
+	httpRule := &HttpRule{ServiceID: search.Id}
+	httpRule, err := httpRule.Find(c, tx, httpRule)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	tcpRule := &TcpRule{ServiceID: search.Id}
+	tcpRule, err = tcpRule.Find(c, tx, tcpRule)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	grpcRule := &GrpcRule{ServiceID: search.Id}
+	grpcRule, err = grpcRule.Find(c, tx, grpcRule)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	loadBalance := &LoadBalance{ServiceID: search.Id}
+	loadBalance, err = loadBalance.Find(c, tx, loadBalance)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	accessControl := &AccessControl{ServiceID: search.Id}
+	accessControl, err = accessControl.Find(c, tx, accessControl)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	detail := &ServiceDetail{
+		Info:          search,
+		HTTPRule:      httpRule,
+		TCPRule:       tcpRule,
+		GRPCRule:      grpcRule,
+		LoadBalance:   loadBalance,
+		AccessControl: accessControl,
+	}
+	return detail, nil
 }
 
 func (t *ServiceInfo) PageList(c *gin.Context, tx *gorm.DB, param *dto.ServiceListInput) ([]ServiceInfo, int64, error) {

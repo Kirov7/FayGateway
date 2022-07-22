@@ -3,6 +3,7 @@ package dao
 import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"strings"
 )
 
 type LoadBalance struct {
@@ -13,7 +14,7 @@ type LoadBalance struct {
 	CheckInterval int    `json:"check_interval" gorm:"column:check_interval" description:"检查间隔, 单位s		"`
 	RoundType     int    `json:"round_type" gorm:"column:round_type" description:"轮询方式 round/weight_round/random/ip_hash"`
 	IpList        string `json:"ip_list" gorm:"column:ip_list" description:"ip列表"`
-	WeightList    string `json:"weight_list" gorm:"column:weight_list" description:"权重列表"`
+	WeightList    string `json:"weight_list" gorm:"column:weight_list" description:"权重列表"`
 	ForbidList    string `json:"forbid_list" gorm:"column:forbid_list" description:"禁用ip列表"`
 
 	UpstreamConnectTimeout int `json:"upstream_connect_timeout" gorm:"column:upstream_connect_timeout" description:"下游建立连接超时, 单位s"`
@@ -37,4 +38,8 @@ func (t *LoadBalance) Save(c *gin.Context, tx *gorm.DB) error {
 		return err
 	}
 	return nil
+}
+
+func (t LoadBalance) GetIPListByModel() []string {
+	return strings.Split(t.IpList, ",")
 }
