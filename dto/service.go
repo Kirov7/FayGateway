@@ -23,8 +23,8 @@ type ServiceListItemOutput struct {
 
 }
 type ServiceListOutput struct {
-	Total int64  `json:"total" form:"total" comment:"总数" example:"" validate:""`              //总数
-	List  string `json:"page_no" form:"page_no" comment:"页数" example:"1" validate:"required"` //列表
+	Total int64                   `json:"total" form:"total" comment:"总数" ` //总数
+	List  []ServiceListItemOutput `json:"list" form:"list" comment:"列表"`    //列表
 }
 
 // BindValidParam 参数校验

@@ -52,6 +52,53 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/change_pwd": {
+            "post": {
+                "description": "管理员信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理员接口"
+                ],
+                "summary": "管理员信息",
+                "operationId": "/admin/change_pwd",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "polygon",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ChangePwdInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/admin_login/login": {
             "post": {
                 "description": "管理员登录",
@@ -99,7 +146,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin_login/login_out": {
+        "/admin_login/logout": {
             "get": {
                 "description": "管理员退出",
                 "consumes": [
@@ -112,7 +159,7 @@ const docTemplate = `{
                     "管理员接口"
                 ],
                 "summary": "管理员退出",
-                "operationId": "/admin_login/login_out",
+                "operationId": "/admin_login/logout",
                 "responses": {
                     "200": {
                         "description": "success",
@@ -181,6 +228,64 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/service/service_list": {
+            "get": {
+                "description": "服务列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理"
+                ],
+                "summary": "服务列表",
+                "operationId": "/service/service_list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "关键词",
+                        "name": "info",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页个数",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页数",
+                        "name": "page_no",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ServiceListOutput"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -239,6 +344,19 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.ChangePwdInput": {
+            "type": "object",
+            "required": [
+                "password"
+            ],
+            "properties": {
+                "password": {
+                    "description": "管理员密码",
+                    "type": "string",
+                    "example": "123456"
+                }
+            }
+        },
         "dto.DemoInput": {
             "type": "object",
             "required": [
@@ -258,6 +376,59 @@ const docTemplate = `{
                 "passwd": {
                     "type": "string",
                     "example": "123456"
+                }
+            }
+        },
+        "dto.ServiceListItemOutput": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "id",
+                    "type": "integer"
+                },
+                "load_type": {
+                    "description": "服务类型",
+                    "type": "integer"
+                },
+                "qpd": {
+                    "description": "qpd",
+                    "type": "integer"
+                },
+                "qps": {
+                    "description": "qps",
+                    "type": "integer"
+                },
+                "service_addr": {
+                    "description": "服务地址",
+                    "type": "string"
+                },
+                "service_desc": {
+                    "description": "服务描述",
+                    "type": "string"
+                },
+                "service_name": {
+                    "description": "服务名称",
+                    "type": "string"
+                },
+                "total_node": {
+                    "description": "节点数",
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ServiceListOutput": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "description": "列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.ServiceListItemOutput"
+                    }
+                },
+                "total": {
+                    "description": "总数",
+                    "type": "integer"
                 }
             }
         },
