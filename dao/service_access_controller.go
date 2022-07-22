@@ -10,3 +10,7 @@ type AccessControl struct {
 	ClientIPFlowLimit int    `json:"clientip_flow_limit" gorm:"column:clientip_flow_limit" description:"客户端ip限流	"`
 	ServiceFlowLimit  int    `json:"service_flow_limit" gorm:"column:service_flow_limit" description:"服务端限流	"`
 }
+
+func (t *AccessControl) TableName() string {
+	return "gateway_service_access_controller"
+}
