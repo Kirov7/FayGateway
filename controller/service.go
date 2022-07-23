@@ -8,6 +8,7 @@ import (
 	"github.com/e421083458/FayGateway/public"
 	"github.com/e421083458/golang_common/lib"
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 )
 
 type ServiceController struct{}
@@ -16,6 +17,7 @@ func ServiceRegister(group *gin.RouterGroup) {
 	service := &ServiceController{}
 	group.GET("/service_list", service.ServiceList)
 	group.GET("/service_delete", service.ServiceDelete)
+	group.POST("/service_add_http", service.ServiceAddHTTP)
 }
 
 // ServiceList godoc
@@ -135,5 +137,35 @@ func (service *ServiceController) ServiceDelete(c *gin.Context) {
 		middleware.ResponseError(c, 2003, err)
 		return
 	}
+	middleware.ResponseSuccess(c, "")
+}
+
+// ServiceAddHTTP godoc
+// @Summary 添加HTTP服务
+// @Description 添加HTTP服务
+// @Tags 服务管理
+// @ID /service/service_add_http
+// @Accept  json
+// @Produce  json
+// @Param polygon body dto.ServiceAddHTTPInput true "body"
+// @Success 200 {object} middleware.Response{data=string} "success"
+// @Router /service/service_add_http [post]
+func (service *ServiceController) ServiceAddHTTP(c *gin.Context) {
+	params := &dto.ServiceAddHTTPInput{}
+	if err := params.BindValidParam(c); err != nil {
+		middleware.ResponseError(c, 2000, err)
+		return
+	}
+	tx, err := lib.GetGormPool("default")
+	if err != nil {
+		middleware.ResponseError(c, 2001, err)
+		return
+	}
+	serviceInfo := &dao.ServiceInfo{ServiceName: params.ServiceName}
+	if _, err = serviceInfo.Find(c, tx, serviceInfo); err == nil {
+		middleware.ResponseError(c, 2001, errors.New("服务已存在"))
+		return
+	}
+	//todo 字段关联性校验
 	middleware.ResponseSuccess(c, "")
 }
