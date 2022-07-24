@@ -9,6 +9,7 @@ import (
 	"github.com/e421083458/golang_common/lib"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"strings"
 )
 
 type ServiceController struct{}
@@ -163,9 +164,18 @@ func (service *ServiceController) ServiceAddHTTP(c *gin.Context) {
 	}
 	serviceInfo := &dao.ServiceInfo{ServiceName: params.ServiceName}
 	if _, err = serviceInfo.Find(c, tx, serviceInfo); err == nil {
-		middleware.ResponseError(c, 2001, errors.New("服务已存在"))
+		middleware.ResponseError(c, 2002, errors.New("服务已存在"))
 		return
 	}
-	//todo 字段关联性校验
+	httpUrl := &dao.HttpRule{RuleType: params.RuleType, Rule: params.Rule}
+	if _, err = httpUrl.Find(c, tx, httpUrl); err == nil {
+		middleware.ResponseError(c, 2003, errors.New("接入域名或前缀已存在"))
+		return
+	}
+
+	if len(strings.Split(params.IpList, "\n")) != len(strings.Split(params.WeightList, "\n")) {
+		middleware.ResponseError(c, 2004, errors.New("IP列表和权重列表数量不一致"))
+		return
+	}
 	middleware.ResponseSuccess(c, "")
 }

@@ -51,14 +51,17 @@ func TranslationMiddleware() gin.HandlerFunc {
 				return fl.Field().String() == "admin"
 			})
 			val.RegisterValidation("valid_service_name", func(fl validator.FieldLevel) bool {
-				matched, _ := regexp.Match(`[a-zA-Z0-9_]{6,128}`, []byte(fl.Field().String()))
+				matched, _ := regexp.Match(`^[a-zA-Z0-9_]{6,128}$`, []byte(fl.Field().String()))
 				return matched
 			})
 			val.RegisterValidation("valid_rule", func(fl validator.FieldLevel) bool {
-				matched, _ := regexp.Match(`\S+`, []byte(fl.Field().String()))
+				matched, _ := regexp.Match(`^\S+$`, []byte(fl.Field().String()))
 				return matched
 			})
 			val.RegisterValidation("valid_url_rewrite", func(fl validator.FieldLevel) bool {
+				if fl.Field().String() == "" {
+					return true
+				}
 				for _, ms := range strings.Split(fl.Field().String(), "\n") {
 					if len(strings.Split(ms, " ")) != 2 {
 						return false
@@ -76,7 +79,7 @@ func TranslationMiddleware() gin.HandlerFunc {
 			})
 			val.RegisterValidation("valid_ipportlist", func(fl validator.FieldLevel) bool {
 				for _, ms := range strings.Split(fl.Field().String(), "\n") {
-					if matched, _ := regexp.Match(`^\S:\d+$`, []byte(ms)); !matched {
+					if matched, _ := regexp.Match(`^\S+:\d+$`, []byte(ms)); !matched {
 						return false
 					}
 				}
