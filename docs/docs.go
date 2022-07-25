@@ -474,6 +474,7 @@ const docTemplate = `{
         "dto.ServiceAddHTTPInput": {
             "type": "object",
             "required": [
+                "id",
                 "ip_list",
                 "rule",
                 "service_desc",
@@ -496,6 +497,11 @@ const docTemplate = `{
                     "description": "header转换",
                     "type": "string",
                     "example": ""
+                },
+                "id": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "example": 62
                 },
                 "ip_list": {
                     "description": "ip列表",

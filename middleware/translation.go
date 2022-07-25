@@ -70,6 +70,9 @@ func TranslationMiddleware() gin.HandlerFunc {
 				return true
 			})
 			val.RegisterValidation("valid_header_transfor", func(fl validator.FieldLevel) bool {
+				if fl.Field().String() == "" {
+					return true
+				}
 				for _, ms := range strings.Split(fl.Field().String(), "\n") {
 					if len(strings.Split(ms, " ")) != 3 {
 						return false
@@ -79,7 +82,7 @@ func TranslationMiddleware() gin.HandlerFunc {
 			})
 			val.RegisterValidation("valid_ipportlist", func(fl validator.FieldLevel) bool {
 				for _, ms := range strings.Split(fl.Field().String(), "\n") {
-					if matched, _ := regexp.Match(`^\S+:\d+$`, []byte(ms)); !matched {
+					if matched, _ := regexp.Match(`^\S+\:\d+$`, []byte(ms)); !matched {
 						return false
 					}
 				}

@@ -27,7 +27,6 @@ func (param *ServiceDeleteInput) BindValidParam(c *gin.Context) error {
 }
 
 type ServiceAddHTTPInput struct {
-	ID          int64  `json:"id" form:"id" comment:"服务ID" example:"62" validate:"required,min=1"`
 	ServiceName string `json:"service_name" form:"service_name" comment:"服务名" example:"" validate:"required,valid_service_name"` //服务名
 	ServiceDesc string `json:"service_desc" form:"service_desc" comment:"服务描述" example:"" validate:"required,max=255,min=1"`     //服务描述
 

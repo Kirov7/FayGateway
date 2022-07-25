@@ -55,7 +55,7 @@ func (changePwd *AdminController) AdminInfo(c *gin.Context) {
 
 // ChangePwd godoc
 // @Summary 管理员信息
-// @Description 管理员信息
+// @Description 更改密码
 // @Tags 管理员接口
 // @ID /admin/change_pwd
 // @Accept  json
@@ -78,7 +78,7 @@ func (changePwd *AdminController) ChangePwd(c *gin.Context) {
 	sess := sessions.Default(c)
 	sessInfo := sess.Get(public.AdminSessionInfoKey)
 	adminSessInfo := dto.AdminSessionInfo{}
-	if err := json.Unmarshal([]byte(fmt.Sprint(sessInfo)), adminSessInfo); err != nil {
+	if err := json.Unmarshal([]byte(fmt.Sprint(sessInfo)), &adminSessInfo); err != nil {
 		middleware.ResponseError(c, 2001, err)
 		return
 	}

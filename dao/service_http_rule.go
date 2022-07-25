@@ -23,7 +23,11 @@ func (t *HttpRule) TableName() string {
 
 func (t *HttpRule) Find(c *gin.Context, tx *gorm.DB, search *HttpRule) (*HttpRule, error) {
 	model := &HttpRule{}
-	err := tx.WithContext(c).Where(search).Find(model).Error
+	resultFind := tx.WithContext(c).Where(search).Find(model)
+	if resultFind.RowsAffected < 1 {
+		resultFind.AddError(gorm.ErrRecordNotFound)
+	}
+	err := resultFind.Error
 	return model, err
 }
 

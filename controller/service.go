@@ -9,6 +9,7 @@ import (
 	"github.com/e421083458/golang_common/lib"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"log"
 	"strings"
 )
 
@@ -164,6 +165,7 @@ func (service *ServiceController) ServiceAddHTTP(c *gin.Context) {
 	}
 	serviceInfo := &dao.ServiceInfo{ServiceName: params.ServiceName}
 	if _, err = serviceInfo.Find(c, tx, serviceInfo); err == nil {
+		log.Print(err)
 		middleware.ResponseError(c, 2002, errors.New("服务已存在"))
 		return
 	}
