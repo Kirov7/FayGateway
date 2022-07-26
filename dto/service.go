@@ -107,3 +107,8 @@ type ServiceListOutput struct {
 	Total int64                   `json:"total" form:"total" comment:"总数" ` //总数
 	List  []ServiceListItemOutput `json:"list" form:"list" comment:"列表"`    //列表
 }
+
+type ServiceStatOutput struct {
+	Today     []int64 `json:"today" form:"today" comment:"今日流量"`         //今日流量
+	Yesterday []int64 `json:"yesterday" form:"yesterday" comment:"昨日流量"` //昨日流量
+}
