@@ -269,12 +269,27 @@ func (service *ServiceController) ServiceUpdateHTTP(c *gin.Context) {
 	}
 	tx = tx.Begin()
 	serviceInfo := &dao.ServiceInfo{ServiceName: params.ServiceName}
-	serviceDetail, err := serviceInfo.ServiceDetail(c, tx, serviceInfo)
+	serviceInfo, err = serviceInfo.Find(c, tx, serviceInfo)
 	if err != nil {
 		tx.Rollback()
 		middleware.ResponseError(c, 2003, errors.New("服务不存在"))
 		return
 	}
+	serviceDetail, err := serviceInfo.ServiceDetail(c, tx, serviceInfo)
+	if err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2004, errors.New("服务不存在"))
+		return
+	}
+
+	info := serviceDetail.Info
+	info.ServiceDesc = params.ServiceDesc
+	if err := info.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2005, err)
+		return
+	}
+
 	httpRule := serviceDetail.HTTPRule
 	httpRule.NeedHttps = params.NeedHttps
 	httpRule.NeedStripUri = params.NeedStripUri
@@ -283,7 +298,7 @@ func (service *ServiceController) ServiceUpdateHTTP(c *gin.Context) {
 	httpRule.HeaderTransfor = params.HeaderTransfor
 	if err := httpRule.Save(c, tx); err != nil {
 		tx.Rollback()
-		middleware.ResponseError(c, 2004, err)
+		middleware.ResponseError(c, 2006, err)
 		return
 	}
 
@@ -295,7 +310,7 @@ func (service *ServiceController) ServiceUpdateHTTP(c *gin.Context) {
 	accessControl.ServiceFlowLimit = params.ServiceFlowLimit
 	if err := accessControl.Save(c, tx); err != nil {
 		tx.Rollback()
-		middleware.ResponseError(c, 2005, err)
+		middleware.ResponseError(c, 2007, err)
 		return
 	}
 
@@ -309,7 +324,7 @@ func (service *ServiceController) ServiceUpdateHTTP(c *gin.Context) {
 	loadBalance.UpstreamMaxIdle = params.UpstreamMaxIdle
 	if err := loadBalance.Save(c, tx); err != nil {
 		tx.Rollback()
-		middleware.ResponseError(c, 2006, err)
+		middleware.ResponseError(c, 2008, err)
 		return
 	}
 
