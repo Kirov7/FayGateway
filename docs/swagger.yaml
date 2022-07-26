@@ -77,10 +77,6 @@ definitions:
         description: header转换
         example: ""
         type: string
-      id:
-        example: 62
-        minimum: 1
-        type: integer
       ip_list:
         description: ip列表
         example: ""
@@ -173,7 +169,6 @@ definitions:
         example: ""
         type: string
     required:
-    - id
     - ip_list
     - rule
     - service_desc
@@ -256,7 +251,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: 管理员信息
+      description: 更改密码
       operationId: /admin/change_pwd
       parameters:
       - description: body
