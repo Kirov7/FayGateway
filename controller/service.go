@@ -21,8 +21,15 @@ func ServiceRegister(group *gin.RouterGroup) {
 	group.GET("/service_delete", service.ServiceDelete)
 	group.GET("/service_detail", service.ServiceDetail)
 	group.GET("/service_stat", service.ServiceStat)
-	group.POST("/service_update_http", service.ServiceUpdateHTTP)
+
 	group.POST("/service_add_http", service.ServiceAddHTTP)
+	group.POST("/service_update_http", service.ServiceUpdateHTTP)
+
+	group.POST("/service_add_tcp", service.ServiceAddTCP)
+	group.POST("/service_update_tcp", service.ServiceUpdateTCP)
+
+	group.POST("/service_add_grpc", service.ServiceAddGRPC)
+	group.POST("/service_update_grpc", service.ServiceUpdateGRPC)
 }
 
 // ServiceList godoc
@@ -186,6 +193,7 @@ func (service *ServiceController) ServiceAddHTTP(c *gin.Context) {
 	}
 
 	serviceModel := &dao.ServiceInfo{
+		LoadType:    public.LoadTypeHTTP,
 		ServiceName: params.ServiceName,
 		ServiceDesc: params.ServiceDesc,
 	}
@@ -194,7 +202,7 @@ func (service *ServiceController) ServiceAddHTTP(c *gin.Context) {
 		middleware.ResponseError(c, 2005, err)
 		return
 	}
-	//serviceModel.ID进行连接
+	//serviceModel.ID进行表连接
 	httpRule := &dao.HttpRule{
 		ServiceID:      serviceModel.ID,
 		RuleType:       params.RuleType,
@@ -270,7 +278,7 @@ func (service *ServiceController) ServiceUpdateHTTP(c *gin.Context) {
 		return
 	}
 	tx = tx.Begin()
-	serviceInfo := &dao.ServiceInfo{ServiceName: params.ServiceName}
+	serviceInfo := &dao.ServiceInfo{ServiceName: params.ServiceName, IsDelete: 0}
 	serviceInfo, err = serviceInfo.Find(c, tx, serviceInfo)
 	if err != nil {
 		tx.Rollback()
@@ -329,7 +337,210 @@ func (service *ServiceController) ServiceUpdateHTTP(c *gin.Context) {
 		middleware.ResponseError(c, 2008, err)
 		return
 	}
+	//提交,数据入库
+	tx.Commit()
+	middleware.ResponseSuccess(c, "")
+}
 
+// ServiceAddTCP godoc
+// @Summary 添加TCP服务
+// @Description 添加TCP服务
+// @Tags 服务管理
+// @ID /service/service_add_tcp
+// @Accept  json
+// @Produce  json
+// @Param polygon body dto.ServiceAddTcpInput true "body"
+// @Success 200 {object} middleware.Response{data=string} "success"
+// @Router /service/service_add_tcp [post]
+func (service *ServiceController) ServiceAddTCP(c *gin.Context) {
+	params := &dto.ServiceAddTcpInput{}
+	if err := params.BindValidParam(c); err != nil {
+		middleware.ResponseError(c, 2000, err)
+		return
+	}
+
+	if len(strings.Split(params.IpList, "\n")) != len(strings.Split(params.WeightList, "\n")) {
+		middleware.ResponseError(c, 2001, errors.New("IP列表和权重列表数量不一致"))
+		return
+	}
+	tx, err := lib.GetGormPool("default")
+	if err != nil {
+		middleware.ResponseError(c, 2002, err)
+		return
+	}
+
+	//验证端口是否被占用?
+	tcpRuleSearch := &dao.TcpRule{
+		Port: params.Port,
+	}
+	if _, err := tcpRuleSearch.Find(c, tx, tcpRuleSearch); err == nil {
+		middleware.ResponseError(c, 2003, errors.New("服务端口被占用，请重新输入"))
+		return
+	}
+	grpcRuleSearch := &dao.GrpcRule{
+		Port: params.Port,
+	}
+	if _, err := grpcRuleSearch.Find(c, tx, grpcRuleSearch); err == nil {
+		middleware.ResponseError(c, 2004, errors.New("服务端口被占用，请重新输入"))
+		return
+	}
+
+	serviceInfo := &dao.ServiceInfo{ServiceName: params.ServiceName, IsDelete: 0}
+	if _, err = serviceInfo.Find(c, tx, serviceInfo); err == nil {
+		middleware.ResponseError(c, 2005, errors.New("服务已存在"))
+		return
+	}
+
+	tx = tx.Begin()
+	serviceModel := &dao.ServiceInfo{
+		LoadType:    public.LoadTypeTCP,
+		ServiceName: params.ServiceName,
+		ServiceDesc: params.ServiceDesc,
+	}
+	if err := serviceModel.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2006, err)
+		return
+	}
+	//serviceModel.ID进行表连接
+	TcpRule := &dao.TcpRule{
+		ServiceID: serviceModel.ID,
+		Port:      params.Port,
+	}
+	if err := TcpRule.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2007, err)
+		return
+	}
+	accessControl := &dao.AccessControl{
+		ServiceID:         serviceModel.ID,
+		OpenAuth:          params.OpenAuth,
+		BlackList:         params.BlackList,
+		WhiteList:         params.WhiteList,
+		WhiteHostName:     params.WhiteHostName,
+		ClientIPFlowLimit: params.ClientIPFlowLimit,
+		ServiceFlowLimit:  params.ServiceFlowLimit,
+	}
+	if err := accessControl.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2008, err)
+		return
+	}
+
+	loadBalance := &dao.LoadBalance{
+		ServiceID:  serviceModel.ID,
+		RoundType:  params.RoundType,
+		IpList:     params.IpList,
+		WeightList: params.WeightList,
+		ForbidList: params.ForbidList,
+	}
+	if err := loadBalance.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2009, err)
+		return
+	}
+	//提交,数据入库
+	tx.Commit()
+	middleware.ResponseSuccess(c, "")
+}
+
+// ServiceUpdateTCP godoc
+// @Summary 修改TCP服务
+// @Description 修改TCP服务
+// @Tags 服务管理
+// @ID /service/service_update_tcp
+// @Accept  json
+// @Produce  json
+// @Param polygon body dto.ServiceUpdateTcpInput true "body"
+// @Success 200 {object} middleware.Response{data=string} "success"
+// @Router /service/service_update_tcp [post]
+func (service *ServiceController) ServiceUpdateTCP(c *gin.Context) {
+	params := &dto.ServiceUpdateTcpInput{}
+	if err := params.BindValidParam(c); err != nil {
+		middleware.ResponseError(c, 2000, err)
+		return
+	}
+	if len(strings.Split(params.IpList, "\n")) != len(strings.Split(params.WeightList, "\n")) {
+		middleware.ResponseError(c, 2001, errors.New("IP列表和权重列表数量不一致"))
+		return
+	}
+	tx, err := lib.GetGormPool("default")
+	if err != nil {
+		middleware.ResponseError(c, 2002, err)
+		return
+	}
+	tx = tx.Begin()
+	serviceInfo := &dao.ServiceInfo{ServiceName: params.ServiceName, IsDelete: 0}
+	serviceInfo, err = serviceInfo.Find(c, tx, serviceInfo)
+	if err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2003, errors.New("服务不存在"))
+		return
+	}
+	serviceDetail, err := serviceInfo.ServiceDetail(c, tx, serviceInfo)
+	if err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2004, errors.New("服务不存在"))
+		return
+	}
+
+	//验证端口是否被占用?
+	tcpRuleSearch := &dao.TcpRule{
+		Port: params.Port,
+	}
+	if _, err := tcpRuleSearch.Find(c, tx, tcpRuleSearch); err == nil {
+		middleware.ResponseError(c, 2003, errors.New("服务端口被占用，请重新输入"))
+		return
+	}
+	grpcRuleSearch := &dao.GrpcRule{
+		Port: params.Port,
+	}
+	if _, err := grpcRuleSearch.Find(c, tx, grpcRuleSearch); err == nil {
+		middleware.ResponseError(c, 2004, errors.New("服务端口被占用，请重新输入"))
+		return
+	}
+
+	info := serviceDetail.Info
+	info.ServiceDesc = params.ServiceDesc
+	if err := info.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2005, err)
+		return
+	}
+
+	tcpRule := serviceDetail.TCPRule
+	tcpRule.ServiceID = params.ID
+	tcpRule.Port = params.Port
+	if err := tcpRule.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2006, err)
+		return
+	}
+
+	accessControl := serviceDetail.AccessControl
+	accessControl.OpenAuth = params.OpenAuth
+	accessControl.BlackList = params.BlackList
+	accessControl.WhiteList = params.WhiteList
+	accessControl.WhiteHostName = params.WhiteHostName
+	accessControl.ClientIPFlowLimit = params.ClientIPFlowLimit
+	accessControl.ServiceFlowLimit = params.ServiceFlowLimit
+	if err := accessControl.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2007, err)
+		return
+	}
+
+	loadBalance := serviceDetail.LoadBalance
+	loadBalance.RoundType = params.RoundType
+	loadBalance.IpList = params.WhiteList
+	loadBalance.WeightList = params.WeightList
+	loadBalance.ForbidList = params.ForbidList
+
+	if err := loadBalance.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2008, err)
+		return
+	}
 	//提交,数据入库
 	tx.Commit()
 	middleware.ResponseSuccess(c, "")
@@ -358,7 +569,7 @@ func (service *ServiceController) ServiceDetail(c *gin.Context) {
 		return
 	}
 	//读取基本信息
-	serviceInfo := &dao.ServiceInfo{ID: params.ID}
+	serviceInfo := &dao.ServiceInfo{ID: params.ID, IsDelete: 0}
 	serviceInfo, err = serviceInfo.Find(c, tx, serviceInfo)
 	if err != nil {
 		middleware.ResponseError(c, 2002, err)
@@ -371,6 +582,211 @@ func (service *ServiceController) ServiceDetail(c *gin.Context) {
 		return
 	}
 	middleware.ResponseSuccess(c, serviceDetail)
+}
+
+// ServiceAddGRPC godoc
+// @Summary 添加GRPC服务
+// @Description 添加TCP服务
+// @Tags 服务管理
+// @ID /service/service_add_grpc
+// @Accept  json
+// @Produce  json
+// @Param polygon body dto.ServiceAddGrpcInput true "body"
+// @Success 200 {object} middleware.Response{data=string} "success"
+// @Router /service/service_add_grpc [post]
+func (service *ServiceController) ServiceAddGRPC(c *gin.Context) {
+	params := &dto.ServiceAddGrpcInput{}
+	if err := params.BindValidParam(c); err != nil {
+		middleware.ResponseError(c, 2000, err)
+		return
+	}
+
+	if len(strings.Split(params.IpList, "\n")) != len(strings.Split(params.WeightList, "\n")) {
+		middleware.ResponseError(c, 2001, errors.New("IP列表和权重列表数量不一致"))
+		return
+	}
+	tx, err := lib.GetGormPool("default")
+	if err != nil {
+		middleware.ResponseError(c, 2002, err)
+		return
+	}
+
+	//验证端口是否被占用?
+	tcpRuleSearch := &dao.TcpRule{
+		Port: params.Port,
+	}
+	if _, err := tcpRuleSearch.Find(c, tx, tcpRuleSearch); err == nil {
+		middleware.ResponseError(c, 2003, errors.New("服务端口被占用，请重新输入"))
+		return
+	}
+	grpcRuleSearch := &dao.GrpcRule{
+		Port: params.Port,
+	}
+	if _, err := grpcRuleSearch.Find(c, tx, grpcRuleSearch); err == nil {
+		middleware.ResponseError(c, 2004, errors.New("服务端口被占用，请重新输入"))
+		return
+	}
+
+	serviceInfo := &dao.ServiceInfo{ServiceName: params.ServiceName, IsDelete: 0}
+	if _, err = serviceInfo.Find(c, tx, serviceInfo); err == nil {
+		middleware.ResponseError(c, 2005, errors.New("服务已存在"))
+		return
+	}
+
+	tx = tx.Begin()
+	serviceModel := &dao.ServiceInfo{
+		LoadType:    public.LoadTypeTCP,
+		ServiceName: params.ServiceName,
+		ServiceDesc: params.ServiceDesc,
+	}
+	if err := serviceModel.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2006, err)
+		return
+	}
+	//serviceModel.ID进行表连接
+	TcpRule := &dao.TcpRule{
+		ServiceID: serviceModel.ID,
+		Port:      params.Port,
+	}
+	if err := TcpRule.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2007, err)
+		return
+	}
+	accessControl := &dao.AccessControl{
+		ServiceID:         serviceModel.ID,
+		OpenAuth:          params.OpenAuth,
+		BlackList:         params.BlackList,
+		WhiteList:         params.WhiteList,
+		WhiteHostName:     params.WhiteHostName,
+		ClientIPFlowLimit: params.ClientIPFlowLimit,
+		ServiceFlowLimit:  params.ServiceFlowLimit,
+	}
+	if err := accessControl.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2008, err)
+		return
+	}
+
+	loadBalance := &dao.LoadBalance{
+		ServiceID:  serviceModel.ID,
+		RoundType:  params.RoundType,
+		IpList:     params.IpList,
+		WeightList: params.WeightList,
+		ForbidList: params.ForbidList,
+	}
+	if err := loadBalance.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2009, err)
+		return
+	}
+	//提交,数据入库
+	tx.Commit()
+	middleware.ResponseSuccess(c, "")
+}
+
+// ServiceUpdateGRPC godoc
+// @Summary 修改GRPC服务
+// @Description 修改GRPC服务
+// @Tags 服务管理
+// @ID /service/service_update_grpc
+// @Accept  json
+// @Produce  json
+// @Param polygon body dto.ServiceUpdateGrpcInput true "body"
+// @Success 200 {object} middleware.Response{data=string} "success"
+// @Router /service/service_update_grpc [post]
+func (service *ServiceController) ServiceUpdateGRPC(c *gin.Context) {
+	params := &dto.ServiceUpdateGrpcInput{}
+	if err := params.BindValidParam(c); err != nil {
+		middleware.ResponseError(c, 2000, err)
+		return
+	}
+	if len(strings.Split(params.IpList, "\n")) != len(strings.Split(params.WeightList, "\n")) {
+		middleware.ResponseError(c, 2001, errors.New("IP列表和权重列表数量不一致"))
+		return
+	}
+	tx, err := lib.GetGormPool("default")
+	if err != nil {
+		middleware.ResponseError(c, 2002, err)
+		return
+	}
+	tx = tx.Begin()
+	serviceInfo := &dao.ServiceInfo{ServiceName: params.ServiceName, IsDelete: 0}
+	serviceInfo, err = serviceInfo.Find(c, tx, serviceInfo)
+	if err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2003, errors.New("服务不存在"))
+		return
+	}
+	serviceDetail, err := serviceInfo.ServiceDetail(c, tx, serviceInfo)
+	if err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2004, errors.New("服务不存在"))
+		return
+	}
+
+	//验证端口是否被占用?
+	tcpRuleSearch := &dao.TcpRule{
+		Port: params.Port,
+	}
+	if _, err := tcpRuleSearch.Find(c, tx, tcpRuleSearch); err == nil {
+		middleware.ResponseError(c, 2003, errors.New("服务端口被占用，请重新输入"))
+		return
+	}
+	grpcRuleSearch := &dao.GrpcRule{
+		Port: params.Port,
+	}
+	if _, err := grpcRuleSearch.Find(c, tx, grpcRuleSearch); err == nil {
+		middleware.ResponseError(c, 2004, errors.New("服务端口被占用，请重新输入"))
+		return
+	}
+
+	info := serviceDetail.Info
+	info.ServiceDesc = params.ServiceDesc
+	if err := info.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2005, err)
+		return
+	}
+
+	grpcRule := serviceDetail.GRPCRule
+	grpcRule.ServiceID = params.ID
+	grpcRule.Port = params.Port
+	grpcRule.HeaderTransfor = params.HeaderTransfor
+	if err := grpcRule.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2006, err)
+		return
+	}
+
+	accessControl := serviceDetail.AccessControl
+	accessControl.OpenAuth = params.OpenAuth
+	accessControl.BlackList = params.BlackList
+	accessControl.WhiteList = params.WhiteList
+	accessControl.WhiteHostName = params.WhiteHostName
+	accessControl.ClientIPFlowLimit = params.ClientIPFlowLimit
+	accessControl.ServiceFlowLimit = params.ServiceFlowLimit
+	if err := accessControl.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2007, err)
+		return
+	}
+
+	loadBalance := serviceDetail.LoadBalance
+	loadBalance.RoundType = params.RoundType
+	loadBalance.IpList = params.WhiteList
+	loadBalance.WeightList = params.WeightList
+	loadBalance.ForbidList = params.ForbidList
+
+	if err := loadBalance.Save(c, tx); err != nil {
+		tx.Rollback()
+		middleware.ResponseError(c, 2008, err)
+		return
+	}
+	//提交,数据入库
+	tx.Commit()
+	middleware.ResponseSuccess(c, "")
 }
 
 // ServiceStat godoc
