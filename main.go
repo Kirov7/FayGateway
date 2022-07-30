@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"github.com/e421083458/FayGateway/dao"
 	"github.com/e421083458/FayGateway/http_proxy_router"
 	"github.com/e421083458/FayGateway/router"
 	"github.com/e421083458/golang_common/lib"
@@ -42,6 +43,7 @@ func main() {
 	} else {
 		lib.InitModule(*config, []string{"base", "mysql", "redis"})
 		defer lib.Destroy()
+		dao.ServiceMangerHandler.LoadOnce()
 		go func() {
 			http_proxy_router.HttpServerRun()
 		}()
