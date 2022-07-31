@@ -3,11 +3,10 @@ package reverse_proxy
 import (
 	"bytes"
 	"compress/gzip"
-	"fmt"
+	"github.com/e421083458/FayGateway/middleware"
 	"github.com/e421083458/FayGateway/reverse_proxy/load_balance"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -20,11 +19,11 @@ func NewLoadBalanceReverseProxy(c *gin.Context, lb load_balance.LoadBalance, tra
 	director := func(req *http.Request) {
 		nextAddr, err := lb.Get(req.URL.String())
 		if err != nil {
-			log.Fatal("get next addr fail")
+			panic("get next addr fail")
 		}
 		target, err := url.Parse(nextAddr)
 		if err != nil {
-			log.Fatal(err)
+			panic(err)
 		}
 		targetQuery := target.RawQuery
 		req.URL.Scheme = target.Scheme
@@ -80,8 +79,7 @@ func NewLoadBalanceReverseProxy(c *gin.Context, lb load_balance.LoadBalance, tra
 	//错误回调 ：关闭real_server时测试，错误回调
 	//范围：transport.RoundTrip发生的错误、以及ModifyResponse发生的错误
 	errFunc := func(w http.ResponseWriter, r *http.Request, err error) {
-		//todo record error log
-		fmt.Println(err)
+		middleware.ResponseError(c, 999, err)
 	}
 
 	return &httputil.ReverseProxy{Director: director, Transport: trans, ModifyResponse: modifyFunc, ErrorHandler: errFunc}

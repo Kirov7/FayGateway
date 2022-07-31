@@ -2,7 +2,6 @@ package load_balance
 
 import (
 	"fmt"
-	//"github.com/e421083458/FayGateway/proxy/zookeeper"
 )
 
 // 配置主题

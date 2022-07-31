@@ -102,11 +102,11 @@ func (lbr *LoadBalancer) GetLoadBalancer(service *ServiceDetail) (load_balance.L
 		ipConf[ipItem] = weightList[ipIndex]
 	}
 	mConf, err := load_balance.NewLoadBalanceCheckConf(
-		fmt.Sprintf("%s://%s%s", schema, prefix), ipConf)
+		fmt.Sprintf("%s://%s%s", schema, "%s", prefix), ipConf)
 	if err != nil {
 		return nil, err
 	}
-	lb := load_balance.LoadBanlanceFactorWithConf(load_balance.LbWeightRoundRobin, mConf)
+	lb := load_balance.LoadBanlanceFactorWithConf(load_balance.LbType(service.LoadBalance.RoundType), mConf)
 
 	//save to map and slice
 	lbItem := &LoadBalancerItem{
@@ -155,11 +155,11 @@ func (t *Transporter) GetTrans(service *ServiceDetail) (*http.Transport, error) 
 	}
 	trans := &http.Transport{
 		DialContext: (&net.Dialer{
-			Timeout: time.Duration(service.LoadBalance.UpstreamConnectTimeout), //连接超时
+			Timeout: time.Duration(service.LoadBalance.UpstreamConnectTimeout) * time.Second, //连接超时
 		}).DialContext,
-		MaxIdleConns:          service.LoadBalance.UpstreamMaxIdle,                      //最大空闲连接
-		IdleConnTimeout:       time.Duration(service.LoadBalance.UpstreamIdleTimeout),   //空闲超时时间
-		ResponseHeaderTimeout: time.Duration(service.LoadBalance.UpstreamHeaderTimeout), //100-continue超时时间
+		MaxIdleConns:          service.LoadBalance.UpstreamMaxIdle,                                    //最大空闲连接
+		IdleConnTimeout:       time.Duration(service.LoadBalance.UpstreamIdleTimeout) * time.Second,   //空闲超时时间
+		ResponseHeaderTimeout: time.Duration(service.LoadBalance.UpstreamHeaderTimeout) * time.Second, //100-continue超时时间
 	}
 	transItem := &TransportItem{
 		Trans:       trans,
