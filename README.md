@@ -16,7 +16,7 @@ Gin best practices, gin development scaffolding, too late to explain, get on the
 使用gin构建了企业级脚手架，代码简洁易读，可快速进行高效web开发。
 主要功能有：
 1. 请求链路日志打印，涵盖mysql/redis/request
-2. 支持多语言错误信息提示及自定义错误提示。
+2. 支持多语言错误信息提示及自定义错误提示
 3. 支持了多配置环境
 4. 封装了 log/redis/mysql/http.client 常用方法
 5. 支持swagger文档生成
