@@ -2,7 +2,7 @@ package router
 
 import (
 	"context"
-	"github.com/e421083458/golang_common/lib"
+	"github.com/Kirov7/go-config/lib"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"

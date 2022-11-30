@@ -6,7 +6,7 @@ import (
 	"github.com/Kirov7/FayGateway/dto"
 	"github.com/Kirov7/FayGateway/middleware"
 	"github.com/Kirov7/FayGateway/public"
-	"github.com/e421083458/golang_common/lib"
+	"github.com/Kirov7/go-config/lib"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"strings"

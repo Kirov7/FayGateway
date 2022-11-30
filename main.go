@@ -5,7 +5,7 @@ import (
 	"github.com/Kirov7/FayGateway/dao"
 	"github.com/Kirov7/FayGateway/http_proxy_router"
 	"github.com/Kirov7/FayGateway/router"
-	"github.com/e421083458/golang_common/lib"
+	"github.com/Kirov7/go-config/lib"
 	"os"
 	"os/signal"
 	"syscall"

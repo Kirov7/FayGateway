@@ -2,9 +2,9 @@ package http_proxy_router
 
 import (
 	"context"
-	"github.com/e421083458/FayGateway/cert_file"
-	"github.com/e421083458/FayGateway/middleware"
-	"github.com/e421083458/golang_common/lib"
+	"github.com/Kirov7/FayGateway/cert_file"
+	"github.com/Kirov7/FayGateway/middleware"
+	"github.com/Kirov7/go-config/lib"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
