@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"bytes"
-	"github.com/e421083458/FayGateway/public"
+	"github.com/Kirov7/FayGateway/public"
 	"github.com/e421083458/golang_common/lib"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"

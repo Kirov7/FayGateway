@@ -2,21 +2,21 @@ package main
 
 import (
 	"flag"
-	"github.com/e421083458/FayGateway/dao"
-	"github.com/e421083458/FayGateway/http_proxy_router"
-	"github.com/e421083458/FayGateway/router"
+	"github.com/Kirov7/FayGateway/dao"
+	"github.com/Kirov7/FayGateway/http_proxy_router"
+	"github.com/Kirov7/FayGateway/router"
 	"github.com/e421083458/golang_common/lib"
 	"os"
 	"os/signal"
 	"syscall"
 )
 
-//endpoint dashboard后台管理 server代理服务器
-//conf ./conf/prod/ 对应配置文件夹
+// endpoint dashboard后台管理 server代理服务器
+// conf ./conf/prod/ 对应配置文件夹
 
 var (
-	endpoint = flag.String("endpoint", "", "input endpoint dashboard or server")
-	config   = flag.String("conf", "", "input config file like ./conf/dev/")
+	endpoint = flag.String("endpoint", "server", "input endpoint dashboard or server")
+	config   = flag.String("conf", "./conf/dev/", "input config file like ./conf/dev/")
 )
 
 func main() {

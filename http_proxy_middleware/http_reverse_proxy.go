@@ -1,9 +1,9 @@
 package http_proxy_middleware
 
 import (
-	"github.com/e421083458/FayGateway/dao"
-	"github.com/e421083458/FayGateway/middleware"
-	"github.com/e421083458/FayGateway/reverse_proxy"
+	"github.com/Kirov7/FayGateway/dao"
+	"github.com/Kirov7/FayGateway/middleware"
+	"github.com/Kirov7/FayGateway/reverse_proxy"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 )

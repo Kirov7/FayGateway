@@ -3,8 +3,8 @@ package reverse_proxy
 import (
 	"bytes"
 	"compress/gzip"
-	"github.com/e421083458/FayGateway/middleware"
-	"github.com/e421083458/FayGateway/reverse_proxy/load_balance"
+	"github.com/Kirov7/FayGateway/middleware"
+	"github.com/Kirov7/FayGateway/reverse_proxy/load_balance"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"

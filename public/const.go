@@ -16,7 +16,7 @@ const (
 var (
 	LoadTypeMap = map[int]string{
 		LoadTypeHTTP: "HTTP",
-		LoadTypeTCP:  "HTTP",
-		LoadTypeGRPC: "HTTP",
+		LoadTypeTCP:  "TCP",
+		LoadTypeGRPC: "GRPC",
 	}
 )

@@ -2,8 +2,8 @@ package dao
 
 import (
 	"fmt"
-	"github.com/e421083458/FayGateway/public"
-	"github.com/e421083458/FayGateway/reverse_proxy/load_balance"
+	"github.com/Kirov7/FayGateway/public"
+	"github.com/Kirov7/FayGateway/reverse_proxy/load_balance"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net"

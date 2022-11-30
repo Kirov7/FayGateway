@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"github.com/e421083458/FayGateway/dto"
+	"github.com/Kirov7/FayGateway/dto"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"time"

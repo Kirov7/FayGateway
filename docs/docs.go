@@ -182,9 +182,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/demo/bind": {
+        "/app/app_add": {
             "post": {
-                "description": "测试数据绑定",
+                "description": "租户添加",
                 "consumes": [
                     "application/json"
                 ],
@@ -192,18 +192,18 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "用户"
+                    "租户管理"
                 ],
-                "summary": "测试数据绑定",
-                "operationId": "/demo/bind",
+                "summary": "租户添加",
+                "operationId": "/app/app_add",
                 "parameters": [
                     {
                         "description": "body",
-                        "name": "polygon",
+                        "name": "body",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.DemoInput"
+                            "$ref": "#/definitions/dto.APPAddHttpInput"
                         }
                     }
                 ],
@@ -219,7 +219,402 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.DemoInput"
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/app/app_delete": {
+            "get": {
+                "description": "租户删除",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "租户管理"
+                ],
+                "summary": "租户删除",
+                "operationId": "/app/app_delete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "租户ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/app/app_detail": {
+            "get": {
+                "description": "租户详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "租户管理"
+                ],
+                "summary": "租户详情",
+                "operationId": "/app/app_detail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "租户ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dao.App"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/app/app_list": {
+            "get": {
+                "description": "租户列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "租户管理"
+                ],
+                "summary": "租户列表",
+                "operationId": "/app/app_list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "关键词",
+                        "name": "info",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "每页多少条",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "页码",
+                        "name": "page_no",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.APPListOutput"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/app/app_stat": {
+            "get": {
+                "description": "租户统计",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "租户管理"
+                ],
+                "summary": "租户统计",
+                "operationId": "/app/app_stat",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "租户ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.StatisticsOutput"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/app/app_update": {
+            "post": {
+                "description": "租户更新",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "租户管理"
+                ],
+                "summary": "租户更新",
+                "operationId": "/app/app_update",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.APPUpdateHttpInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/flow_stat": {
+            "get": {
+                "description": "服务统计",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "首页大盘"
+                ],
+                "summary": "服务统计",
+                "operationId": "/dashboard/flow_stat",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ServiceStatOutput"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/panel_group_data": {
+            "get": {
+                "description": "指标统计",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "首页大盘"
+                ],
+                "summary": "指标统计",
+                "operationId": "/dashboard/panel_group_data",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.PanelGroupDataOutput"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/service_stat": {
+            "get": {
+                "description": "服务统计",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "首页大盘"
+                ],
+                "summary": "服务统计",
+                "operationId": "/dashboard/service_stat",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.DashServiceStatOutput"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/service/service_add_grpc": {
+            "post": {
+                "description": "添加TCP服务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理"
+                ],
+                "summary": "添加GRPC服务",
+                "operationId": "/service/service_add_grpc",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "polygon",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ServiceAddGrpcInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
                                         }
                                     }
                                 }
@@ -251,6 +646,53 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/dto.ServiceAddHTTPInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/service/service_add_tcp": {
+            "post": {
+                "description": "添加TCP服务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理"
+                ],
+                "summary": "添加TCP服务",
+                "operationId": "/service/service_add_tcp",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "polygon",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ServiceAddTcpInput"
                         }
                     }
                 ],
@@ -424,6 +866,98 @@ const docTemplate = `{
                 }
             }
         },
+        "/service/service_stat": {
+            "get": {
+                "description": "服务统计",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理"
+                ],
+                "summary": "服务统计",
+                "operationId": "/service/service_stat",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "服务ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ServiceStatOutput"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/service/service_update_grpc": {
+            "post": {
+                "description": "修改GRPC服务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理"
+                ],
+                "summary": "修改GRPC服务",
+                "operationId": "/service/service_update_grpc",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "polygon",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ServiceUpdateGrpcInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/service/service_update_http": {
             "post": {
                 "description": "修改HTTP服务",
@@ -446,6 +980,53 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/dto.ServiceUpdateHTTPInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/middleware.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/service/service_update_tcp": {
+            "post": {
+                "description": "修改TCP服务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理"
+                ],
+                "summary": "修改TCP服务",
+                "operationId": "/service/service_update_tcp",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "polygon",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ServiceUpdateTcpInput"
                         }
                     }
                 ],
@@ -498,6 +1079,41 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "white_list": {
+                    "type": "string"
+                }
+            }
+        },
+        "dao.App": {
+            "type": "object",
+            "properties": {
+                "app_id": {
+                    "type": "string"
+                },
+                "create_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_delete": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "qpd": {
+                    "type": "integer"
+                },
+                "qps": {
+                    "type": "integer"
+                },
+                "secret": {
+                    "type": "string"
+                },
+                "update_at": {
+                    "type": "string"
+                },
+                "white_ips": {
                     "type": "string"
                 }
             }
@@ -658,6 +1274,119 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.APPAddHttpInput": {
+            "type": "object",
+            "required": [
+                "app_id",
+                "name"
+            ],
+            "properties": {
+                "app_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "qpd": {
+                    "type": "integer"
+                },
+                "qps": {
+                    "type": "integer"
+                },
+                "secret": {
+                    "type": "string"
+                },
+                "white_ips": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.APPListItemOutput": {
+            "type": "object",
+            "properties": {
+                "app_id": {
+                    "type": "string"
+                },
+                "create_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_delete": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "qpd": {
+                    "type": "integer"
+                },
+                "qps": {
+                    "type": "integer"
+                },
+                "real_qpd": {
+                    "type": "integer"
+                },
+                "real_qps": {
+                    "type": "integer"
+                },
+                "secret": {
+                    "type": "string"
+                },
+                "update_at": {
+                    "type": "string"
+                },
+                "white_ips": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.APPListOutput": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.APPListItemOutput"
+                    }
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.APPUpdateHttpInput": {
+            "type": "object",
+            "required": [
+                "id",
+                "name",
+                "secret"
+            ],
+            "properties": {
+                "app_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "qpd": {
+                    "type": "integer"
+                },
+                "qps": {
+                    "type": "integer"
+                },
+                "secret": {
+                    "type": "string"
+                },
+                "white_ips": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.AdminInfoOutput": {
             "type": "object",
             "properties": {
@@ -726,25 +1455,107 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.DemoInput": {
+        "dto.DashServiceStatItemOutput": {
             "type": "object",
-            "required": [
-                "age",
-                "name",
-                "passwd"
-            ],
             "properties": {
-                "age": {
-                    "type": "integer",
-                    "example": 20
+                "load_type": {
+                    "type": "integer"
                 },
                 "name": {
-                    "type": "string",
-                    "example": "姓名"
+                    "type": "string"
                 },
-                "passwd": {
-                    "type": "string",
-                    "example": "123456"
+                "value": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.DashServiceStatOutput": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.DashServiceStatItemOutput"
+                    }
+                },
+                "legend": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "dto.PanelGroupDataOutput": {
+            "type": "object",
+            "properties": {
+                "appNum": {
+                    "type": "integer"
+                },
+                "currentQps": {
+                    "type": "integer"
+                },
+                "serviceNum": {
+                    "type": "integer"
+                },
+                "todayRequestNum": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ServiceAddGrpcInput": {
+            "type": "object",
+            "required": [
+                "ip_list",
+                "port",
+                "service_desc",
+                "service_name",
+                "weight_list"
+            ],
+            "properties": {
+                "black_list": {
+                    "type": "string"
+                },
+                "clientip_flow_limit": {
+                    "type": "integer"
+                },
+                "forbid_list": {
+                    "type": "string"
+                },
+                "header_transfor": {
+                    "type": "string"
+                },
+                "ip_list": {
+                    "type": "string"
+                },
+                "open_auth": {
+                    "type": "integer"
+                },
+                "port": {
+                    "type": "integer",
+                    "maximum": 8999,
+                    "minimum": 8001
+                },
+                "round_type": {
+                    "type": "integer"
+                },
+                "service_desc": {
+                    "type": "string"
+                },
+                "service_flow_limit": {
+                    "type": "integer"
+                },
+                "service_name": {
+                    "type": "string"
+                },
+                "weight_list": {
+                    "type": "string"
+                },
+                "white_host_name": {
+                    "type": "string"
+                },
+                "white_list": {
+                    "type": "string"
                 }
             }
         },
@@ -885,6 +1696,59 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.ServiceAddTcpInput": {
+            "type": "object",
+            "required": [
+                "ip_list",
+                "port",
+                "service_desc",
+                "service_name",
+                "weight_list"
+            ],
+            "properties": {
+                "black_list": {
+                    "type": "string"
+                },
+                "clientip_flow_limit": {
+                    "type": "integer"
+                },
+                "forbid_list": {
+                    "type": "string"
+                },
+                "ip_list": {
+                    "type": "string"
+                },
+                "open_auth": {
+                    "type": "integer"
+                },
+                "port": {
+                    "type": "integer",
+                    "maximum": 8999,
+                    "minimum": 8001
+                },
+                "round_type": {
+                    "type": "integer"
+                },
+                "service_desc": {
+                    "type": "string"
+                },
+                "service_flow_limit": {
+                    "type": "integer"
+                },
+                "service_name": {
+                    "type": "string"
+                },
+                "weight_list": {
+                    "type": "string"
+                },
+                "white_host_name": {
+                    "type": "string"
+                },
+                "white_list": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.ServiceListItemOutput": {
             "type": "object",
             "properties": {
@@ -935,6 +1799,85 @@ const docTemplate = `{
                 "total": {
                     "description": "总数",
                     "type": "integer"
+                }
+            }
+        },
+        "dto.ServiceStatOutput": {
+            "type": "object",
+            "properties": {
+                "today": {
+                    "description": "今日流量",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "yesterday": {
+                    "description": "昨日流量",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "dto.ServiceUpdateGrpcInput": {
+            "type": "object",
+            "required": [
+                "id",
+                "ip_list",
+                "port",
+                "service_desc",
+                "service_name",
+                "weight_list"
+            ],
+            "properties": {
+                "black_list": {
+                    "type": "string"
+                },
+                "clientip_flow_limit": {
+                    "type": "integer"
+                },
+                "forbid_list": {
+                    "type": "string"
+                },
+                "header_transfor": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "ip_list": {
+                    "type": "string"
+                },
+                "open_auth": {
+                    "type": "integer"
+                },
+                "port": {
+                    "type": "integer",
+                    "maximum": 8999,
+                    "minimum": 8001
+                },
+                "round_type": {
+                    "type": "integer"
+                },
+                "service_desc": {
+                    "type": "string"
+                },
+                "service_flow_limit": {
+                    "type": "integer"
+                },
+                "service_name": {
+                    "type": "string"
+                },
+                "weight_list": {
+                    "type": "string"
+                },
+                "white_host_name": {
+                    "type": "string"
+                },
+                "white_list": {
+                    "type": "string"
                 }
             }
         },
@@ -1079,6 +2022,84 @@ const docTemplate = `{
                     "description": "白名单ip",
                     "type": "string",
                     "example": ""
+                }
+            }
+        },
+        "dto.ServiceUpdateTcpInput": {
+            "type": "object",
+            "required": [
+                "id",
+                "ip_list",
+                "port",
+                "service_desc",
+                "service_name",
+                "weight_list"
+            ],
+            "properties": {
+                "black_list": {
+                    "type": "string"
+                },
+                "clientip_flow_limit": {
+                    "type": "integer"
+                },
+                "forbid_list": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "ip_list": {
+                    "type": "string"
+                },
+                "open_auth": {
+                    "type": "integer"
+                },
+                "port": {
+                    "type": "integer",
+                    "maximum": 8999,
+                    "minimum": 8001
+                },
+                "round_type": {
+                    "type": "integer"
+                },
+                "service_desc": {
+                    "type": "string"
+                },
+                "service_flow_limit": {
+                    "type": "integer"
+                },
+                "service_name": {
+                    "type": "string"
+                },
+                "weight_list": {
+                    "type": "string"
+                },
+                "white_host_name": {
+                    "type": "string"
+                },
+                "white_list": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.StatisticsOutput": {
+            "type": "object",
+            "required": [
+                "today",
+                "yesterday"
+            ],
+            "properties": {
+                "today": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "yesterday": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },

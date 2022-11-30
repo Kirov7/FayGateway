@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"errors"
-	"github.com/e421083458/FayGateway/public"
+	"github.com/Kirov7/FayGateway/public"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )

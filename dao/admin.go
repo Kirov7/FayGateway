@@ -1,8 +1,8 @@
 package dao
 
 import (
-	"github.com/e421083458/FayGateway/dto"
-	"github.com/e421083458/FayGateway/public"
+	"github.com/Kirov7/FayGateway/dto"
+	"github.com/Kirov7/FayGateway/public"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"

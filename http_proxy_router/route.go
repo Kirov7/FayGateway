@@ -1,7 +1,7 @@
 package http_proxy_router
 
 import (
-	"github.com/e421083458/FayGateway/http_proxy_middleware"
+	"github.com/Kirov7/FayGateway/http_proxy_middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,7 +14,9 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 			"message": "pong",
 		})
 	})
-	router.Use(http_proxy_middleware.HTTPAccessModeMiddleware(),
-		http_proxy_middleware.HTTPReverseProxyMiddleWare())
+	router.Use(
+		http_proxy_middleware.HTTPAccessModeMiddleware(),
+		http_proxy_middleware.HTTPReverseProxyMiddleWare(),
+	)
 	return router
 }

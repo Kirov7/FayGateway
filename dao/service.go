@@ -2,8 +2,8 @@ package dao
 
 import (
 	"fmt"
-	"github.com/e421083458/FayGateway/dto"
-	"github.com/e421083458/FayGateway/public"
+	"github.com/Kirov7/FayGateway/dto"
+	"github.com/Kirov7/FayGateway/public"
 	"github.com/e421083458/golang_common/lib"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
@@ -23,7 +23,7 @@ type ServiceDetail struct {
 
 var ServiceMangerHandler *ServiceManager
 
-//加载dao的时候,直接执行init,使ServiceMangerHandler初始化
+// 加载dao的时候,直接执行init,使ServiceMangerHandler初始化
 func init() {
 	ServiceMangerHandler = NewServiceManager()
 }
@@ -51,12 +51,14 @@ func (s *ServiceManager) HTTPAccessMode(c *gin.Context) (*ServiceDetail, error) 
 
 	// host c.Request.Host
 	// path c.Request.URL.Path
-	host := c.Request.Host //www.abc.com:8080
+	host := c.Request.Host
+	// 如果域名匹配时附带了端口,也需要先截取域名www.abc.com:8080
 	host = host[0:strings.Index(host, ":")]
 	fmt.Println("host: ", host)
 	path := c.Request.URL.Path
 
 	for _, serviceItem := range s.ServiceSlice {
+		// 判断当前服务是否为http服务
 		if serviceItem.Info.LoadType != public.LoadTypeHTTP {
 			continue
 		}
@@ -74,6 +76,7 @@ func (s *ServiceManager) HTTPAccessMode(c *gin.Context) (*ServiceDetail, error) 
 	return nil, errors.New("not matched service")
 }
 
+// LoadOnce 服务信息加载到内存
 func (s *ServiceManager) LoadOnce() error {
 	s.init.Do(func() {
 		serviceInfo := &ServiceInfo{}

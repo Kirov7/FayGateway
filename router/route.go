@@ -1,9 +1,9 @@
 package router
 
 import (
-	"github.com/e421083458/FayGateway/controller"
-	"github.com/e421083458/FayGateway/docs"
-	"github.com/e421083458/FayGateway/middleware"
+	"github.com/Kirov7/FayGateway/controller"
+	"github.com/Kirov7/FayGateway/docs"
+	"github.com/Kirov7/FayGateway/middleware"
 	"github.com/e421083458/golang_common/lib"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
