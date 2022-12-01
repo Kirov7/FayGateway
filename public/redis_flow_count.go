@@ -17,7 +17,7 @@ type RedisFlowCountService struct {
 	TotalCount  int64
 }
 
-func NewRedisFlowCountService(appID string, interval time.Duration) (*RedisFlowCountService, error) {
+func NewRedisFlowCountService(appID string, interval time.Duration) *RedisFlowCountService {
 	reqCounter := &RedisFlowCountService{
 		AppID:    appID,
 		Interval: interval,
@@ -41,9 +41,9 @@ func NewRedisFlowCountService(appID string, interval time.Duration) (*RedisFlowC
 			hourKey := reqCounter.GetHourKey(currentTime)
 			if err := RedisConfPipeline(func(c redis.Conn) {
 				c.Send("INCRBY", dayKey, tickerCount)
-				c.Send("EXPIRE", dayKey, 86400*2)
+				c.Send("EXPIRE", dayKey, 86400*1000*2)
 				c.Send("INCRBY", hourKey, tickerCount)
-				c.Send("EXPIRE", hourKey, 86400*2)
+				c.Send("EXPIRE", hourKey, 86400*1000*2)
 			}); err != nil {
 				fmt.Println("RedisConfPipeline err", err)
 				continue
@@ -67,16 +67,16 @@ func NewRedisFlowCountService(appID string, interval time.Duration) (*RedisFlowC
 			}
 		}
 	}()
-	return reqCounter, nil
+	return reqCounter
 }
 
 func (o *RedisFlowCountService) GetDayKey(t time.Time) string {
-	dayStr := t.In(lib.TimeLocation).Format("20030104")
+	dayStr := t.In(lib.TimeLocation).Format("20060102")
 	return fmt.Sprintf("%s_%s_%s", RedisFlowDayKey, dayStr, o.AppID)
 }
 
 func (o *RedisFlowCountService) GetHourKey(t time.Time) string {
-	hourStr := t.In(lib.TimeLocation).Format("2003010415")
+	hourStr := t.In(lib.TimeLocation).Format("2006010215")
 	return fmt.Sprintf("%s_%s_%s", RedisFlowHourKey, hourStr, o.AppID)
 }
 

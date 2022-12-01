@@ -14,6 +14,10 @@ const (
 
 	RedisFlowDayKey  = "flow_day_count"
 	RedisFlowHourKey = "flow_hour_count"
+
+	FlowTotal              = "flow_total"
+	FlowCountServicePrefix = "flow_service"
+	FlowCountAppPrefix     = "flow_app"
 )
 
 var (
