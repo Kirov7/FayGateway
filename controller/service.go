@@ -326,7 +326,7 @@ func (service *ServiceController) ServiceUpdateHTTP(c *gin.Context) {
 
 	loadBalance := serviceDetail.LoadBalance
 	loadBalance.RoundType = params.RoundType
-	loadBalance.IpList = params.WhiteList
+	loadBalance.IpList = params.IpList
 	loadBalance.WeightList = params.WeightList
 	loadBalance.UpstreamConnectTimeout = params.UpstreamConnectTimeout
 	loadBalance.UpstreamHeaderTimeout = params.UpstreamHeaderTimeout
