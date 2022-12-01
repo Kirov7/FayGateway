@@ -241,13 +241,13 @@ definitions:
         description: 管理员密码
         example: "123456"
         type: string
-      user_name:
+      username:
         description: 管理员用户名
         example: admin
         type: string
     required:
     - password
-    - user_name
+    - username
     type: object
   dto.AdminLoginOutput:
     properties:

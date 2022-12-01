@@ -1417,7 +1417,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "password",
-                "user_name"
+                "username"
             ],
             "properties": {
                 "password": {
@@ -1425,7 +1425,7 @@ const docTemplate = `{
                     "type": "string",
                     "example": "123456"
                 },
-                "user_name": {
+                "username": {
                     "description": "管理员用户名",
                     "type": "string",
                     "example": "admin"

@@ -11,13 +11,13 @@ import (
 // HTTPReverseProxyMiddleWare 匹配接入方式 基于请求信息
 func HTTPReverseProxyMiddleWare() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		serviceIf, ok := c.Get("service")
+		service, ok := c.Get("service")
 		if !ok {
 			middleware.ResponseError(c, 2001, errors.New("service not found"))
 			c.Abort()
 			return
 		}
-		serviceDetail := serviceIf.(*dao.ServiceDetail)
+		serviceDetail := service.(*dao.ServiceDetail)
 		lb, err := dao.LoadBalancerHandler.GetLoadBalancer(serviceDetail)
 		if err != nil {
 			middleware.ResponseError(c, 2002, err)
@@ -30,9 +30,9 @@ func HTTPReverseProxyMiddleWare() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		proxy := reverse_proxy.NewLoadBalanceReverseProxy(c, lb, trans)
-		proxy.ServeHTTP(c.Writer, c.Request)
 		//创建ReverseProxy
 		//使用ReverseProxy.ServeHTTP(c.request, c.Respone)服务
+		proxy := reverse_proxy.NewLoadBalanceReverseProxy(c, lb, trans)
+		proxy.ServeHTTP(c.Writer, c.Request)
 	}
 }

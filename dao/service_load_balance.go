@@ -101,8 +101,7 @@ func (lbr *LoadBalancer) GetLoadBalancer(service *ServiceDetail) (load_balance.L
 	for ipIndex, ipItem := range ipList {
 		ipConf[ipItem] = weightList[ipIndex]
 	}
-	mConf, err := load_balance.NewLoadBalanceCheckConf(
-		fmt.Sprintf("%s://%s%s", schema, "%s", prefix), ipConf)
+	mConf, err := load_balance.NewLoadBalanceCheckConf(fmt.Sprintf("%s://%s%s", schema, "%s", prefix), ipConf)
 	if err != nil {
 		return nil, err
 	}
