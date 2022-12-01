@@ -18,6 +18,7 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 		http_proxy_middleware.HTTPAccessModeMiddleware(),
 		http_proxy_middleware.HTTPHeaderTransferMiddleware(),
 		http_proxy_middleware.HTTPStripURIMiddleware(),
+		http_proxy_middleware.HTTPUriRewriteMiddleware(),
 		http_proxy_middleware.HTTPReverseProxyMiddleWare(),
 	)
 	return router
