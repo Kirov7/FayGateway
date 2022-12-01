@@ -19,8 +19,11 @@ func HTTPWhiteListMiddleware() gin.HandlerFunc {
 			return
 		}
 		serviceDetail := service.(*dao.ServiceDetail)
+		ipList := []string{}
+		if serviceDetail.AccessControl.WhiteList != "" {
+			ipList = strings.Split(serviceDetail.AccessControl.WhiteList, ",")
+		}
 
-		ipList := strings.Split(serviceDetail.AccessControl.WhiteList, ",")
 		if serviceDetail.AccessControl.OpenAuth == 1 && len(ipList) > 0 {
 			if !public.InStringSlice(ipList, c.ClientIP()) {
 				middleware.ResponseError(c, 3001, errors.New(fmt.Sprintf("%s not in white ip list", c.ClientIP())))
