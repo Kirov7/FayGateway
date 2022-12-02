@@ -98,7 +98,7 @@ func (service *ServiceController) ServiceList(c *gin.Context) {
 			serviceAddr = fmt.Sprintf("%s:%d", clusterIP, serviceDetail.GRPCRule.Port)
 		}
 		ipList := serviceDetail.LoadBalance.GetIPListByModel()
-		serviceCounter, err := public.FlowCounterHandler.GetCounter(public.FlowCountServicePrefix + listItem.ServiceName)
+		serviceCounter, err := public.FlowCounterHandler.GetCounter(public.FlowServicePrefix + listItem.ServiceName)
 		if err != nil {
 			middleware.ResponseError(c, 2004, err)
 			return
@@ -824,7 +824,7 @@ func (service *ServiceController) ServiceStat(c *gin.Context) {
 		return
 	}
 
-	counter, err := public.FlowCounterHandler.GetCounter(public.FlowCountServicePrefix + serviceDetail.Info.ServiceName)
+	counter, err := public.FlowCounterHandler.GetCounter(public.FlowServicePrefix + serviceDetail.Info.ServiceName)
 	if err != nil {
 		middleware.ResponseError(c, 2004, err)
 		return

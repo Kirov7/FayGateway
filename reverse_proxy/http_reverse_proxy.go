@@ -40,9 +40,9 @@ func NewLoadBalanceReverseProxy(c *gin.Context, lb load_balance.LoadBalance, tra
 		}
 	}
 
-	//更改内容
+	// 更改内容
+	// 当压测时,可以将此方法置空(暂时不需要使用场景)
 	modifyFunc := func(resp *http.Response) error {
-		//todo 部分章节功能补充2
 		//todo 兼容websocket
 		if strings.Contains(resp.Header.Get("Connection"), "Upgrade") {
 			return nil
@@ -50,7 +50,6 @@ func NewLoadBalanceReverseProxy(c *gin.Context, lb load_balance.LoadBalance, tra
 		var payload []byte
 		var readErr error
 
-		//todo 部分章节功能补充3
 		//todo 兼容gzip压缩
 		if strings.Contains(resp.Header.Get("Content-Encoding"), "gzip") {
 			gr, err := gzip.NewReader(resp.Body)
@@ -66,7 +65,6 @@ func NewLoadBalanceReverseProxy(c *gin.Context, lb load_balance.LoadBalance, tra
 			return readErr
 		}
 
-		//todo 部分章节功能补充4
 		//todo 因为预读了数据所以内容重新回写
 		c.Set("status_code", resp.StatusCode)
 		c.Set("payload", payload)

@@ -1,13 +1,11 @@
 package http_proxy_middleware
 
 import (
-	"fmt"
 	"github.com/Kirov7/FayGateway/dao"
 	"github.com/Kirov7/FayGateway/middleware"
 	"github.com/Kirov7/FayGateway/public"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
-	"time"
 )
 
 func HTTPFlowCountMiddleware() gin.HandlerFunc {
@@ -29,11 +27,11 @@ func HTTPFlowCountMiddleware() gin.HandlerFunc {
 		}
 		totalCounter.Increase()
 
-		dayCount, _ := totalCounter.GetDayData(time.Now())
-		fmt.Printf("totalCounter qps:%v,dayCount:%v", totalCounter.QPS, dayCount)
+		//dayCount, _ := totalCounter.GetDayData(time.Now())
+		//fmt.Printf("totalCounter qps:%v,dayCount:%v", totalCounter.QPS, dayCount)
 
 		// 2. 服务统计
-		serviceCounter, err := public.FlowCounterHandler.GetCounter(public.FlowCountServicePrefix + serviceDetail.Info.ServiceName)
+		serviceCounter, err := public.FlowCounterHandler.GetCounter(public.FlowServicePrefix + serviceDetail.Info.ServiceName)
 		if err != nil {
 			middleware.ResponseError(c, 4002, err)
 			c.Abort()
@@ -41,8 +39,8 @@ func HTTPFlowCountMiddleware() gin.HandlerFunc {
 		}
 		serviceCounter.Increase()
 
-		dayServiceCount, _ := serviceCounter.GetDayData(time.Now())
-		fmt.Printf("serviceCounter qps:%v,dayCount:%v", serviceCounter.QPS, dayServiceCount)
+		//dayServiceCount, _ := serviceCounter.GetDayData(time.Now())
+		//fmt.Printf("serviceCounter qps:%v,dayCount:%v", serviceCounter.QPS, dayServiceCount)
 
 		// 3. 租户统计
 		//appCounter, err := public.FlowCounterHandler.GetCounter(public.FlowCountAppPrefix)
