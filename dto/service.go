@@ -105,9 +105,9 @@ type ServiceAddTcpInput struct {
 	ServiceFlowLimit  int    `json:"service_flow_limit" form:"service_flow_limit" comment:"服务端限流" validate:""`
 
 	RoundType  int    `json:"round_type" form:"round_type" comment:"轮询策略" validate:""`
-	IpList     string `json:"ip_list" form:"ip_list" comment:"IP列表" validate:"required,valid_ipportlist"`
-	WeightList string `json:"weight_list" form:"weight_list" comment:"权重列表" validate:"required,valid_weightlist"`
-	ForbidList string `json:"forbid_list" form:"forbid_list" comment:"禁用IP列表" validate:"valid_iplist"`
+	IpList     string `json:"ip_list" form:"ip_list" comment:"IP列表" validate:"required"`
+	WeightList string `json:"weight_list" form:"weight_list" comment:"权重列表" validate:"required"`
+	ForbidList string `json:"forbid_list" form:"forbid_list" comment:"禁用IP列表"`
 }
 
 func (params *ServiceAddTcpInput) BindValidParam(c *gin.Context) error {

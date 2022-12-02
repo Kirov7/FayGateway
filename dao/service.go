@@ -21,11 +21,11 @@ type ServiceDetail struct {
 	AccessControl *AccessControl `json:"access_control" description:"access_control"`
 }
 
-var ServiceMangerHandler *ServiceManager
+var ServiceManagerHandler *ServiceManager
 
 // 加载dao的时候,直接执行init,使ServiceMangerHandler初始化
 func init() {
-	ServiceMangerHandler = NewServiceManager()
+	ServiceManagerHandler = NewServiceManager()
 }
 
 type ServiceManager struct {
@@ -43,6 +43,28 @@ func NewServiceManager() *ServiceManager {
 		Locker:       sync.RWMutex{},
 		init:         sync.Once{},
 	}
+}
+
+func (s *ServiceManager) GetTcpServiceList() []*ServiceDetail {
+	list := []*ServiceDetail{}
+	for _, serviceItem := range s.ServiceSlice {
+		tempItem := serviceItem
+		if tempItem.Info.LoadType == public.LoadTypeTCP {
+			list = append(list, tempItem)
+		}
+	}
+	return list
+}
+
+func (s *ServiceManager) GetGrpcServiceList() []*ServiceDetail {
+	list := []*ServiceDetail{}
+	for _, serviceItem := range s.ServiceSlice {
+		tempItem := serviceItem
+		if tempItem.Info.LoadType == public.LoadTypeGRPC {
+			list = append(list, tempItem)
+		}
+	}
+	return list
 }
 
 func (s *ServiceManager) HTTPAccessMode(c *gin.Context) (*ServiceDetail, error) {

@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/Kirov7/FayGateway/public"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/locales/en"
@@ -62,7 +63,7 @@ func TranslationMiddleware() gin.HandlerFunc {
 				if fl.Field().String() == "" {
 					return true
 				}
-				for _, ms := range strings.Split(fl.Field().String(), "\n") {
+				for _, ms := range strings.Split(fl.Field().String(), ",") {
 					if len(strings.Split(ms, " ")) != 2 {
 						return false
 					}
@@ -73,7 +74,7 @@ func TranslationMiddleware() gin.HandlerFunc {
 				if fl.Field().String() == "" {
 					return true
 				}
-				for _, ms := range strings.Split(fl.Field().String(), "\n") {
+				for _, ms := range strings.Split(fl.Field().String(), ",") {
 					if len(strings.Split(ms, " ")) != 3 {
 						return false
 					}
@@ -81,15 +82,28 @@ func TranslationMiddleware() gin.HandlerFunc {
 				return true
 			})
 			val.RegisterValidation("valid_ipportlist", func(fl validator.FieldLevel) bool {
-				for _, ms := range strings.Split(fl.Field().String(), "\n") {
+				for _, ms := range strings.Split(fl.Field().String(), ",") {
 					if matched, _ := regexp.Match(`^\S+\:\d+$`, []byte(ms)); !matched {
 						return false
 					}
 				}
 				return true
 			})
+			val.RegisterValidation("valid_iplist", func(fl validator.FieldLevel) bool {
+				if fl.Field().String() == "" {
+					return true
+				}
+				for _, item := range strings.Split(fl.Field().String(), ",") {
+					matched, _ := regexp.Match(`\S+`, []byte(item)) //ip_addr
+					if !matched {
+						return false
+					}
+				}
+				return true
+			})
 			val.RegisterValidation("valid_weightlist", func(fl validator.FieldLevel) bool {
-				for _, ms := range strings.Split(fl.Field().String(), "\n") {
+				fmt.Println(fl.Field().String())
+				for _, ms := range strings.Split(fl.Field().String(), ",") {
 					if matched, _ := regexp.Match(`^\d+$`, []byte(ms)); !matched {
 						return false
 					}
@@ -130,16 +144,22 @@ func TranslationMiddleware() gin.HandlerFunc {
 				return t
 			})
 			val.RegisterTranslation("valid_ipportlist", trans, func(ut ut.Translator) error {
-				return ut.Add("valid_header_transfor", "{0} 不符合输入格式", true)
+				return ut.Add("valid_ipportlist", "{0} 不符合输入格式", true)
 			}, func(ut ut.Translator, fe validator.FieldError) string {
-				//TODO ip列表
-				return ""
+				t, _ := ut.T("valid_ipportlist", fe.Field())
+				return t
+			})
+			val.RegisterTranslation("valid_iplist", trans, func(ut ut.Translator) error {
+				return ut.Add("valid_iplist", "{0} 不符合输入格式", true)
+			}, func(ut ut.Translator, fe validator.FieldError) string {
+				t, _ := ut.T("valid_iplist", fe.Field())
+				return t
 			})
 			val.RegisterTranslation("valid_weightlist", trans, func(ut ut.Translator) error {
 				return ut.Add("valid_weightlist", "{0} 不符合输入格式", true)
 			}, func(ut ut.Translator, fe validator.FieldError) string {
-				//TODO 权重列表
-				return ""
+				t, _ := ut.T("valid_weightlist", fe.Field())
+				return t
 			})
 			break
 		}

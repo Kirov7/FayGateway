@@ -12,7 +12,7 @@ import (
 // 请求信息与服务列表做匹配关系,匹配到所需要的服务,拿出配置放到上下文里,可以根据匹配到的服务做负载均衡反向代理权限校验等
 func HTTPAccessModeMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		service, err := dao.ServiceMangerHandler.HTTPAccessMode(c)
+		service, err := dao.ServiceManagerHandler.HTTPAccessMode(c)
 		if err != nil {
 			middleware.ResponseError(c, 1001, err)
 			c.Abort()
