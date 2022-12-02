@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/Kirov7/FayGateway/dao"
+	"github.com/Kirov7/FayGateway/grpc_proxy_router"
 	"github.com/Kirov7/FayGateway/http_proxy_router"
 	"github.com/Kirov7/FayGateway/router"
 	"github.com/Kirov7/FayGateway/tcp_proxy_router"
@@ -16,7 +17,7 @@ import (
 // conf ./conf/prod/ 对应配置文件夹
 
 var (
-	endpoint = flag.String("endpoint", "dashboard", "input endpoint dashboard or server")
+	endpoint = flag.String("endpoint", "server", "input endpoint dashboard or server")
 	config   = flag.String("conf", "./conf/dev/", "input config file like ./conf/dev/")
 )
 
@@ -55,11 +56,15 @@ func main() {
 		go func() {
 			tcp_proxy_router.TcpServerRun()
 		}()
+		go func() {
+			grpc_proxy_router.GrpcServerRun()
+		}()
 		quit := make(chan os.Signal)
 		signal.Notify(quit, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGTERM)
 		<-quit
 
 		tcp_proxy_router.TcpServerStop()
+		grpc_proxy_router.GrpcServerStop()
 		http_proxy_router.HttpsServerStop()
 		http_proxy_router.HttpServerStop()
 	}

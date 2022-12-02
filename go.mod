@@ -11,12 +11,15 @@ require (
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-playground/locales v0.14.0
 	github.com/go-playground/universal-translator v0.18.0
+	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/sessions v1.1.3 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.8.3
+	golang.org/x/net v0.0.0-20221014081412-f15817d10f9b
 	golang.org/x/time v0.0.0-20220609170525-579cf78fd858
+	google.golang.org/grpc v1.50.1
 	gopkg.in/go-playground/validator.v9 v9.29.0
 	gorm.io/gorm v1.24.2
 )

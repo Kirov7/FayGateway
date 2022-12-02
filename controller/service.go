@@ -742,7 +742,7 @@ func (service *ServiceController) ServiceUpdateGRPC(c *gin.Context) {
 		Port: params.Port,
 	}
 	if find, err := tcpRuleSearch.Find(c, tx, tcpRuleSearch); err == nil {
-		if find.Port != serviceDetail.TCPRule.Port {
+		if find.Port != serviceDetail.GRPCRule.Port {
 			middleware.ResponseError(c, 2003, errors.New("服务端口被占用，请重新输入"))
 			return
 		}
@@ -751,7 +751,7 @@ func (service *ServiceController) ServiceUpdateGRPC(c *gin.Context) {
 		Port: params.Port,
 	}
 	if find, err := grpcRuleSearch.Find(c, tx, grpcRuleSearch); err == nil {
-		if find.Port != serviceDetail.TCPRule.Port {
+		if find.Port != serviceDetail.GRPCRule.Port {
 			middleware.ResponseError(c, 2004, errors.New("服务端口被占用，请重新输入"))
 			return
 		}
@@ -790,7 +790,7 @@ func (service *ServiceController) ServiceUpdateGRPC(c *gin.Context) {
 
 	loadBalance := serviceDetail.LoadBalance
 	loadBalance.RoundType = params.RoundType
-	loadBalance.IpList = params.WhiteList
+	loadBalance.IpList = params.IpList
 	loadBalance.WeightList = params.WeightList
 	loadBalance.ForbidList = params.ForbidList
 
