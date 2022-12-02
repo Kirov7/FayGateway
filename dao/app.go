@@ -2,8 +2,11 @@ package dao
 
 import (
 	"github.com/Kirov7/FayGateway/dto"
+	"github.com/Kirov7/go-config/lib"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"net/http/httptest"
+	"sync"
 	"time"
 )
 
@@ -60,4 +63,57 @@ func (t *App) APPList(c *gin.Context, tx *gorm.DB, params *dto.APPListInput) ([]
 		return nil, 0, err
 	}
 	return list, count, nil
+}
+
+var AppManagerHandler *AppManager
+
+func init() {
+	AppManagerHandler = NewAppManager()
+}
+
+type AppManager struct {
+	AppMap   map[string]*App
+	AppSlice []*App
+	Locker   sync.RWMutex
+	init     sync.Once
+	err      error
+}
+
+func NewAppManager() *AppManager {
+	return &AppManager{
+		AppMap:   map[string]*App{},
+		AppSlice: []*App{},
+		Locker:   sync.RWMutex{},
+		init:     sync.Once{},
+	}
+}
+
+func (s *AppManager) GetAppList() []*App {
+	return s.AppSlice
+}
+
+func (s *AppManager) LoadOnce() error {
+	s.init.Do(func() {
+		appInfo := &App{}
+		c, _ := gin.CreateTestContext(httptest.NewRecorder())
+		tx, err := lib.GetGormPool("default")
+		if err != nil {
+			s.err = err
+			return
+		}
+		params := &dto.APPListInput{PageNo: 1, PageSize: 99999}
+		list, _, err := appInfo.APPList(c, tx, params)
+		if err != nil {
+			s.err = err
+			return
+		}
+		s.Locker.Lock()
+		defer s.Locker.Unlock()
+		for _, listItem := range list {
+			tmpItem := listItem
+			s.AppMap[listItem.AppID] = &tmpItem
+			s.AppSlice = append(s.AppSlice, &tmpItem)
+		}
+	})
+	return s.err
 }

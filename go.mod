@@ -5,6 +5,7 @@ go 1.14
 require (
 	github.com/Kirov7/go-config v0.0.0-20221127061203-fe479a29babe
 	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/garyburd/redigo v1.6.0
 	github.com/gin-gonic/contrib v0.0.0-20190526021735-7fb7810ed2a0
 	github.com/gin-gonic/gin v1.8.1
@@ -19,5 +20,3 @@ require (
 	gopkg.in/go-playground/validator.v9 v9.29.0
 	gorm.io/gorm v1.24.2
 )
-
-replace github.com/gin-contrib/sse v0.1.0 => github.com/e421083458/sse v0.1.1
