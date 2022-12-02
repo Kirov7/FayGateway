@@ -5,6 +5,7 @@ import (
 	"github.com/Kirov7/FayGateway/dao"
 	"github.com/Kirov7/FayGateway/http_proxy_router"
 	"github.com/Kirov7/FayGateway/router"
+	"github.com/Kirov7/FayGateway/tcp_proxy_router"
 	"github.com/Kirov7/go-config/lib"
 	"os"
 	"os/signal"
@@ -15,7 +16,7 @@ import (
 // conf ./conf/prod/ 对应配置文件夹
 
 var (
-	endpoint = flag.String("endpoint", "server", "input endpoint dashboard or server")
+	endpoint = flag.String("endpoint", "dashboard", "input endpoint dashboard or server")
 	config   = flag.String("conf", "./conf/dev/", "input config file like ./conf/dev/")
 )
 
@@ -43,7 +44,7 @@ func main() {
 	} else {
 		lib.InitModule(*config, []string{"base", "mysql", "redis"})
 		defer lib.Destroy()
-		dao.ServiceMangerHandler.LoadOnce()
+		dao.ServiceManagerHandler.LoadOnce()
 		dao.AppManagerHandler.LoadOnce()
 		go func() {
 			http_proxy_router.HttpServerRun()
@@ -51,11 +52,14 @@ func main() {
 		go func() {
 			http_proxy_router.HttpsServerRun()
 		}()
-
+		go func() {
+			tcp_proxy_router.TcpServerRun()
+		}()
 		quit := make(chan os.Signal)
 		signal.Notify(quit, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGTERM)
 		<-quit
 
+		tcp_proxy_router.TcpServerStop()
 		http_proxy_router.HttpsServerStop()
 		http_proxy_router.HttpServerStop()
 	}

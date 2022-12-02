@@ -2,6 +2,7 @@ package dao
 
 import (
 	"fmt"
+	"github.com/Kirov7/FayGateway/public"
 	"github.com/Kirov7/FayGateway/reverse_proxy/load_balance"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -86,18 +87,20 @@ func (lbr *LoadBalancer) GetLoadBalancer(service *ServiceDetail) (load_balance.L
 			return lbrItem.LoadBalance, nil
 		}
 	}
-	schema := "http"
+	schema := "http://"
 	if service.HTTPRule.NeedHttps == 1 {
-		schema = "https"
+		schema = "https://"
 	}
-
+	if service.Info.LoadType == public.LoadTypeTCP || service.Info.LoadType == public.LoadTypeGRPC {
+		schema = ""
+	}
 	ipList := service.LoadBalance.GetIPListByModel()
 	weightList := service.LoadBalance.GetWeightListByModel()
 	ipConf := map[string]string{}
 	for ipIndex, ipItem := range ipList {
 		ipConf[ipItem] = weightList[ipIndex]
 	}
-	mConf, err := load_balance.NewLoadBalanceCheckConf(fmt.Sprintf("%s://%s", schema, "%s"), ipConf)
+	mConf, err := load_balance.NewLoadBalanceCheckConf(fmt.Sprintf("%s%s", schema, "%s"), ipConf)
 	if err != nil {
 		return nil, err
 	}

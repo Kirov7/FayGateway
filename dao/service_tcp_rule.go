@@ -17,7 +17,11 @@ func (t *TcpRule) TableName() string {
 
 func (t *TcpRule) Find(c *gin.Context, tx *gorm.DB, search *TcpRule) (*TcpRule, error) {
 	model := &TcpRule{}
-	err := tx.WithContext(c).Where(search).Find(model).Error
+	resultFind := tx.WithContext(c).Where(search).Find(model)
+	if resultFind.RowsAffected < 1 {
+		resultFind.AddError(gorm.ErrRecordNotFound)
+	}
+	err := resultFind.Error
 	return model, err
 }
 

@@ -18,7 +18,11 @@ func (t *GrpcRule) TableName() string {
 
 func (t *GrpcRule) Find(c *gin.Context, tx *gorm.DB, search *GrpcRule) (*GrpcRule, error) {
 	model := &GrpcRule{}
-	err := tx.WithContext(c).Where(search).Find(model).Error
+	resultFind := tx.WithContext(c).Where(search).Find(model)
+	if resultFind.RowsAffected < 1 {
+		resultFind.AddError(gorm.ErrRecordNotFound)
+	}
+	err := resultFind.Error
 	return model, err
 }
 
