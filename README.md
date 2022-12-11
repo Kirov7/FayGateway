@@ -2,6 +2,7 @@
 支持HTTP、TCP、GRPC代理
 
 ## 部署方式
+加载依赖
 ```shell
 go mod tidy
 ```
