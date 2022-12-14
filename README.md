@@ -1,5 +1,5 @@
 # FayGateway 反向代理网关
-支持HTTP、TCP、GRPC代理
+支持HTTP、TCP、GRPC的反向代理与负载均衡
 
 ## 部署方式
 加载依赖
